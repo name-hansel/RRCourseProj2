@@ -7,7 +7,8 @@ stormdata <- read.csv("zippedfile.bz2")
 
 #processsing data - pop
 data_health <- stormdata[,c(8,23,24)]
-data_health$loss <- data_health$FATALITIES+data_health$INJURIES
+#data_health$loss <- data_health$FATALITIES+data_health$INJURIES
+data_health <- mutate(data_health,loss=FATALITIES+INJURIES)
 
 
 #population loss
@@ -48,9 +49,9 @@ datacrop <- aggregate(CROPDMG~EVTYPE,data=datacrop,sum) #getting total loss depe
 #add both
 dataeco <- merge(dataprop,datacrop,by="EVTYPE") #combine both dataframes
 dataeco <- mutate(dataeco,loss=CROPDMG+PROPDMG) #add property and crop damages
+dataeco <- arrange(dataeco,-loss)
 
 #plot economic loss
-dataeco <- arrange(dataeco,-loss)
 h <- ggplot(dataeco[1:6,],aes(x=loss,y=EVTYPE))
 h <- h + geom_bar(stat="identity", fill="#FFB6C1", alpha=0.6, width=0.5)
 h <- h + labs(x="Economical Loss",y="Event",title="Events causing highest economical loss")
